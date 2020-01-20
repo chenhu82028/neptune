@@ -1,4 +1,4 @@
-package com.lathingfisher.neptune.neptuneController;
+package com.lathingfisher.neptune.util;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -10,15 +10,13 @@ import java.net.URL;
  * @auther mxh
  * @time 2019/5/20 13:48
  */
-public class ZhiHuTest {
+public class HttpUtil {
 
-    public static void main(String[] args) throws IOException {
+    public static JSONObject getResult(String urls) throws IOException {
 
-        String urls = "https://api.live.bilibili.com/room/v1/room/get_user_recommend?page=0";
         URL url = new URL(urls);
         //打开和url之间的连接
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        PrintWriter out = null;
         //请求方式
         conn.setRequestMethod("GET");
         //设置通用的请求属性
@@ -30,7 +28,7 @@ public class ZhiHuTest {
         //post与get的 不同之处在于post的参数不是放在URL字串里面，而是放在http请求的正文内。get请求不需要设置
 //        conn.setDoOutput(true);
 //        conn.setDoInput(true);
-        //获取URLConnection对象对应的输出流 
+        //获取URLConnection对象对应的输出流
         conn.connect();
         //获取URLConnection对象对应的输入流
         InputStream is = conn.getInputStream();
@@ -41,7 +39,8 @@ public class ZhiHuTest {
         while ((str = br.readLine()) != null) {
             jsonss = JSONObject.parseObject(str);
         }
-        System.out.println("获取到的报文数据为：" + jsonss);
+//        System.out.println("获取到的报文数据为：" + jsonss);
+        return jsonss;
     }
 
 }

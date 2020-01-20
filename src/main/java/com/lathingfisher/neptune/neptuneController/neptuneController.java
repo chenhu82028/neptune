@@ -1,9 +1,11 @@
 package com.lathingfisher.neptune.neptuneController;
 
+import com.lathingfisher.neptune.util.HttpUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,5 +44,19 @@ public class neptuneController {
     }
 
 //    @RequestMapping()
+
+    public static void main(String[] args) {
+
+        try {
+
+
+
+            HttpUtil.getResult("");
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
