@@ -30,7 +30,7 @@ public class ZhiHuTest {
         //post与get的 不同之处在于post的参数不是放在URL字串里面，而是放在http请求的正文内。get请求不需要设置
 //        conn.setDoOutput(true);
 //        conn.setDoInput(true);
-        //获取URLConnection对象对应的输出流
+        //获取URLConnection对象对应的输出流 
         conn.connect();
         //获取URLConnection对象对应的输入流
         InputStream is = conn.getInputStream();
