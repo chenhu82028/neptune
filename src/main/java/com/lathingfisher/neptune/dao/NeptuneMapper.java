@@ -33,4 +33,6 @@ public interface NeptuneMapper {
     void insertRoomAdmin(@Param("list") List<Map<String, Object>> mapList1);
 
     List<Map<String, Object>> selectSearch(@Param("uid") String uid);
+
+    void insertAnchorUser(@Param("roomid")String anchorRoomid,@Param("uname") String anchorUname,@Param("uid") String anchorUid);
 }

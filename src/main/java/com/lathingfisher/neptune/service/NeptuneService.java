@@ -30,4 +30,6 @@ public interface NeptuneService {
     void insertRoomAdmin(List<Map<String, Object>> mapList1);
 
     List<Map<String, Object>> selectSearch(String uid) throws IOException;
+
+    void insertAnchorUser(Object anchorRoomid, Object anchorUname, Object anchorUid);
 }

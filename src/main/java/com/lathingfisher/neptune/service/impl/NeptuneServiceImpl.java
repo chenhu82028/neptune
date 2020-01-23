@@ -1,9 +1,7 @@
 package com.lathingfisher.neptune.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.lathingfisher.neptune.dao.NeptuneMapper;
 import com.lathingfisher.neptune.service.NeptuneService;
-import com.lathingfisher.neptune.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,12 +69,26 @@ public class NeptuneServiceImpl implements NeptuneService {
     @Override
     public List<Map<String, Object>> selectSearch(String uid) throws IOException {
 
+        return neptuneMapper.selectSearch(uid);
+    }
 
-        JSONObject result = HttpUtil.getResult("https://api.bilibili.com/x/web-interface/search/type?context=&keyword=拜托了_喵大人&page=1&order=&category_id=&duration=&user_type=&order_sort=&tids_1=&tids_2=&search_type=bili_user&changing=mid&__refresh__=true&__reload__=false&highlight=1&single_column=0&jsonp=jsonp&callback=__jp0");
-        System.out.println(result);
+    @Override
+    public void insertAnchorUser(Object anchorRoomid, Object anchorUname, Object anchorUid) {
 
-        List<Map<String, Object>> search = neptuneMapper.selectSearch(uid);
+        String roomid = null;
+        String uname = null;
+        String uid = null;
 
-        return null;
+        if (anchorRoomid != null) {
+            roomid = String.valueOf(anchorRoomid);
+        }
+        if (anchorUname != null) {
+            uname = String.valueOf(anchorUname);
+        }
+        if (anchorUid != null && !"".equals(anchorUid )) {
+            uid = String.valueOf(anchorUid);
+        }
+
+        neptuneMapper.insertAnchorUser(roomid,uname,uid);
     }
 }

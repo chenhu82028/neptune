@@ -17,7 +17,8 @@
     <insert id="insertGuardTab">
         INSERT INTO GuardTab(UID , FACE , RANK , RUID , USERNAME , GUARD_LEVEL,ROOMID) VALUES
         <foreach collection="list" item="lists" separator=",">
-            (#{lists.uid},'${lists.face}',#{lists.rank} , #{lists.ruid} , '${lists.username}' , #{lists.guard_level} ,#{lists.roomid})
+            (#{lists.uid},'${lists.face}',#{lists.rank} , #{lists.ruid} , #{lists.username} , #{lists.guard_level}
+            ,#{lists.roomid})
         </foreach>
     </insert>
 
@@ -35,8 +36,8 @@
 
     <insert id="insertUnionFans">
 
-        REPLACE INTO UnionFans(UID , FACE , RANK , RUID , UNAME , UNION_NAME,DAYS,ROOMID)
-        VALUES (#{fans.uid},'${fans.face}',#{fans.rank} , #{fans.ruid} , '${fans.uname}', '${fans.union_name}' , #{fans.days} ,#{fans.roomid})
+        REPLACE INTO UnionFans(UID , RANK , RUID , UNAME , UNION_NAME,DAYS,ROOMID)
+        VALUES (#{fans.uid},#{fans.rank} , #{fans.ruid} , #{fans.uname}, #{fans.union_name} , #{fans.days} ,#{fans.roomid})
 
     </insert>
 
@@ -55,17 +56,30 @@
 
 
     <insert id="insertRoomAdmin">
-        INSERT INTO RoomAdmin(UID , FACE , CTIME , RUID , UNAME , ROOMID) VALUES
+        INSERT INTO RoomAdmin(UID , CTIME , RUID , UNAME , ROOMID) VALUES
         <foreach collection="list" item="lists" separator=",">
-            (#{lists.uid},'${lists.face}','${lists.ctime}' , #{lists.ruid} , #{lists.uname} , #{lists.roomid} )
+            (#{lists.uid},'${lists.ctime}' , #{lists.ruid} , #{lists.uname} , #{lists.roomid} )
         </foreach>
     </insert>
 
     <select id="selectSearch" resultType="java.util.Map">
-        select a.GUARD_LEVEL,a.FACE,a.USERNAME,b.CTIME,b.ROOMID,c.UNION_NAME,c.DAYS from
+        select a.ROOMID,a.RUID,(
+        CASE a.GUARD_LEVEL
+        WHEN 1 THEN  '总督'
+        WHEN 2 THEN '提督'
+        WHEN 3 THEN '舰长'
+        ELSE '未知'
+        END
+        ) as GUARD_LEVEL,a.FACE,a.USERNAME,b.CTIME,c.UNION_NAME,c.DAYS,d.USERNAME as AnchorName from
         GuardTab a
         left join RoomAdmin b on a.ruid = b.ruid and a.uid = b.uid
         left join UnionFans c on a.ruid = c.ruid and a.uid = c.uid
+        left join AnchorUser d on a.ruid = d.uid
         where a.uid = #{uid}
     </select>
+
+    <insert id="insertAnchorUser">
+        REPLACE INTO AnchorUser(UID , USERNAME,ROOMID) VALUES
+        (#{uid}, #{uname},#{roomid} )
+    </insert>
 </mapper>

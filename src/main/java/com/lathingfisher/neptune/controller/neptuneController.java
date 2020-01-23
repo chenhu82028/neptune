@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author C.Hu
@@ -33,66 +35,68 @@ public class neptuneController {
     public NeptuneService neptuneService;
 
     public static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    public static Pattern pattern = Pattern.compile("[^0-9]");
 
     @RequestMapping("/neptune")
     @ResponseBody
     public Map<String, Object> neptune(String type, String value) {
 
-        Map<String, Object> resultData = new HashMap<>();
+        Map<String, Object> resultData = new HashMap<>(2);
+        List<Map<String, Object>> mapList = null;
+
+        if ("拜托了_喵大人".equals(value)) {
+            resultData.put("result", "errormsg");
+            resultData.put("data", "我真的一条都没有");
+            return resultData;
+        }
 
         try {
-//            neptuneService.selectSearch("");
 
-            Connection con = Jsoup.connect("http://search.bilibili.com/upuser?keyword=拜托了_喵大人");// 获取连接
+            if ("1".equals(type)) {
 
-            Response rs = con.execute();// 获取响应
-
-            Document d1 = Jsoup.parse(rs.body());// 转换为Dom树
-
-            System.out.println(d1);
-
-            List<Element> et = d1.select("a.face-img");
-            for (Element element : et) {
-                String href = element.attr("href");
-
-
+                String uid = geUid(value);
+                mapList = neptuneService.selectSearch(uid);
+                resultData.put("data", mapList);
+                resultData.put("result", "success");
+            } else if ("2".equals(type)) {
+                resultData.put("result", "error");
+            } else if ("3".equals(type)) {
+                resultData.put("result", "error");
             }
-
-            System.out.println(et);
-
 
         } catch (Exception e) {
             e.printStackTrace();
+            resultData.put("result", "error");
         }
-//        List<Map<String, String>> maps = new ArrayList<>();
-//        Map<String, String> map = new HashMap<>();
-
-//        if ("3".equals(value)) {
-//            resultData.put("result", "error");
-//        } else {
-//
-//            map.put("date", "2016-05-07");
-//            map.put("name", "王小虎");
-//            map.put("address", "上海市普陀区金沙江路 1518 弄");
-//            map.put("value", value);
-//            map.put("type", type);
-//            maps.add(map);
-//            resultData.put("data", maps);
-//            resultData.put("result", "success");
-
-//        }
-
-        resultData.put("result", "error");
 
         return resultData;
     }
 
-//    @RequestMapping()
+    private String geUid(String uname) throws IOException {
+        Connection con = Jsoup.connect("http://search.bilibili.com/upuser?keyword=" + uname);// 获取连接
+
+        Response rs = con.execute();// 获取响应
+
+        Document d1 = Jsoup.parse(rs.body());// 转换为Dom树
+
+        String integer = null;
+        List<Element> et = d1.select("a.face-img");
+
+        Element element = et.get(0);
+        String href = element.attr("href");
+
+        if (href != null) {
+            Matcher matcher = pattern.matcher(href);
+            integer = matcher.replaceAll("").trim();
+        }
+
+        return integer;
+    }
 
     //    @RequestMapping("/testNeptune")
-//    @ResponseBody
-    @Scheduled(cron = "0 */60 * * * ?")
-    public void test() {
+//    @Scheduled(cron = "0 */60 * * * ?")
+    @Scheduled(initialDelay=1000, fixedRate=3600000)
+    public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
         long start = System.currentTimeMillis();
@@ -157,12 +161,14 @@ public class neptuneController {
                     //舰长
                     getGuardTab(roomid, uid);
 
+                    //获取主播信息
+                    getAnchor(roomid, uid);
+
                     //友爱社
                     getUnionFans(roomid, uid);
 
                     //房管
                     getRoomAdmin(roomid, uid);
-
 
                     //粉丝榜
 //                    JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
@@ -181,7 +187,6 @@ public class neptuneController {
 //                        neptuneService.insertMedalRank(list);
 //                    }
 
-
                 }
             }
 
@@ -190,6 +195,22 @@ public class neptuneController {
         }
 
         System.out.println("全部用时:" + (System.currentTimeMillis() - start) / 1000);
+    }
+
+    private void getAnchor(Object roomid, Object uid) throws IOException {
+        JSONObject anchorMassage = HttpUtil.getResult("https://api.live.bilibili.com/room_ex/v1/RoomNews/get?roomid=" + roomid + "&uid=" + uid);
+        Map<String, Object> anchordata = (Map) anchorMassage.get("data");
+        if (anchordata != null) {
+            if (anchordata.size() > 0) {
+
+                Object anchorRoomid = anchordata.get("roomid");
+
+                Object anchorUname = anchordata.get("uname");
+                Object anchorUid = anchordata.get("uid");
+
+                neptuneService.insertAnchorUser(anchorRoomid, anchorUname, anchorUid);
+            }
+        }
     }
 
     private List<Map<String, Object>> getRoomAdmin(Object roomid, Object uid) throws IOException {
