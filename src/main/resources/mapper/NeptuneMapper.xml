@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lathingfisher.neptune.dao.NeptuneMapper">
+
+
+    <select id="selectAll" resultType="java.util.Map">
+    select * from test
+  </select>
+
+    <insert id="insertSevenRank">
+        INSERT INTO GuardTab(UID , FACE , RANK , RUID , USERNAME , GUARD_LEVEL) VALUES
+        <foreach collection="list" item="lists" separator=",">
+            (#{lists.uid},#{lists.face},#{lists.rank} , #{lists.ruid} , #{lists.username} , #{lists.guard_level} )
+        </foreach>
+    </insert>
+
+    <insert id="insertGuardTab">
+        INSERT INTO GuardTab(UID , FACE , RANK , RUID , USERNAME , GUARD_LEVEL,ROOMID) VALUES
+        <foreach collection="list" item="lists" separator=",">
+            (#{lists.uid},'${lists.face}',#{lists.rank} , #{lists.ruid} , '${lists.username}' , #{lists.guard_level} ,#{lists.roomid})
+        </foreach>
+    </insert>
+
+    <select id="selectByGuardTabRuid" resultType="java.util.Map">
+        select * from GuardTab where ruid = #{ruid}
+    </select>
+
+    <delete id="deleteGuardTab">
+        DELETE FROM GuardTab WHERE
+        ID IN
+        <foreach collection="list" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="insertUnionFans">
+
+        REPLACE INTO UnionFans(UID , FACE , RANK , RUID , UNAME , UNION_NAME,DAYS,ROOMID)
+        VALUES (#{fans.uid},'${fans.face}',#{fans.rank} , #{fans.ruid} , '${fans.uname}', '${fans.union_name}' , #{fans.days} ,#{fans.roomid})
+
+    </insert>
+
+    <select id="selectByRoomAdmin" resultType="java.util.Map">
+        select * from RoomAdmin where ruid = #{ruid}
+    </select>
+
+
+    <delete id="deleteRoomAdmin">
+        DELETE FROM GuardTab WHERE
+        ID IN
+        <foreach collection="list" open="(" item="id" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <insert id="insertRoomAdmin">
+        INSERT INTO RoomAdmin(UID , FACE , CTIME , RUID , UNAME , ROOMID) VALUES
+        <foreach collection="list" item="lists" separator=",">
+            (#{lists.uid},'${lists.face}','${lists.ctime}' , #{lists.ruid} , #{lists.uname} , #{lists.roomid} )
+        </foreach>
+    </insert>
+
+    <select id="selectSearch" resultType="java.util.Map">
+        select a.GUARD_LEVEL,a.FACE,a.USERNAME,b.CTIME,b.ROOMID,c.UNION_NAME,c.DAYS from
+        GuardTab a
+        left join RoomAdmin b on a.ruid = b.ruid and a.uid = b.uid
+        left join UnionFans c on a.ruid = c.ruid and a.uid = c.uid
+        where a.uid = #{uid}
+    </select>
+</mapper>

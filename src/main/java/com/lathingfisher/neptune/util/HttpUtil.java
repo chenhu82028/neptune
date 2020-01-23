@@ -2,9 +2,14 @@ package com.lathingfisher.neptune.util;
 
 import com.alibaba.fastjson.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @auther mxh
@@ -13,6 +18,12 @@ import java.net.URL;
 public class HttpUtil {
 
     public static JSONObject getResult(String urls) throws IOException {
+
+//        try {
+//            Thread.sleep(50);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         URL url = new URL(urls);
         //打开和url之间的连接
@@ -41,6 +52,12 @@ public class HttpUtil {
         }
 //        System.out.println("获取到的报文数据为：" + jsonss);
         return jsonss;
+    }
+
+    public static List<Map<String,Object>> getData(JSONObject jsonObject) {
+        JSONObject data = (JSONObject) jsonObject.get("data");
+        List<Map<String,Object>> list = (List)data.get("list");
+        return list;
     }
 
 }
