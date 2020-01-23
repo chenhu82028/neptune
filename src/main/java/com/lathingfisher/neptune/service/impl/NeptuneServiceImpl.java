@@ -91,4 +91,19 @@ public class NeptuneServiceImpl implements NeptuneService {
 
         neptuneMapper.insertAnchorUser(roomid,uname,uid);
     }
+
+    @Override
+    public List<Map<String, Object>> selectByMedalRank(Object list) {
+        return neptuneMapper.selectByMedalRank(list);
+    }
+
+    @Override
+    public void insertMedalRank(List<Map<String, Object>> mapList1) {
+        neptuneMapper.insertMedalRank(mapList1);
+    }
+
+    @Override
+    public void deleteMedalRank(List<Integer> integers) {
+        neptuneMapper.deleteMedalRank(integers);
+    }
 }

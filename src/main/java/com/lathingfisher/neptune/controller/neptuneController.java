@@ -1,7 +1,9 @@
 package com.lathingfisher.neptune.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lathingfisher.neptune.service.NeptuneLog;
 import com.lathingfisher.neptune.service.NeptuneService;
+import com.lathingfisher.neptune.util.AddressUtils;
 import com.lathingfisher.neptune.util.HttpUtil;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -34,19 +37,24 @@ public class neptuneController {
     @Autowired
     public NeptuneService neptuneService;
 
+    @Autowired
+    public NeptuneLog neptuneLog;
+
     public static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     public static Pattern pattern = Pattern.compile("[^0-9]");
 
     @RequestMapping("/neptune")
     @ResponseBody
-    public Map<String, Object> neptune(String type, String value) {
+    public Map<String, Object> neptune(String type, String value, HttpServletRequest request) {
 
         Map<String, Object> resultData = new HashMap<>(2);
         List<Map<String, Object>> mapList = null;
 
         if ("拜托了_喵大人".equals(value)) {
             resultData.put("result", "errormsg");
-            resultData.put("data", "我真的一条都没有");
+            resultData.put("data", "别看了,我真的一条都没有");
+
+            saveLog(type, value, request, "error");
             return resultData;
         }
 
@@ -55,13 +63,21 @@ public class neptuneController {
             if ("1".equals(type)) {
 
                 String uid = geUid(value);
+                if (uid == null) {
+                    resultData.put("result", "error");
+                    saveLog(type, value, request, "error");
+                    return resultData;
+                }
                 mapList = neptuneService.selectSearch(uid);
                 resultData.put("data", mapList);
                 resultData.put("result", "success");
+                saveLog(type, value, request, "success");
             } else if ("2".equals(type)) {
                 resultData.put("result", "error");
+                saveLog(type, value, request, "error");
             } else if ("3".equals(type)) {
                 resultData.put("result", "error");
+                saveLog(type, value, request, "error");
             }
 
         } catch (Exception e) {
@@ -70,6 +86,22 @@ public class neptuneController {
         }
 
         return resultData;
+    }
+
+    private void saveLog(String type, String value, HttpServletRequest request, String result) {
+        try {
+            String requestURI = request.getRemoteAddr();
+            String addresses = null;
+
+            if (requestURI != null) {
+                addresses = AddressUtils.getAddresses("ip=" + requestURI, "utf-8");
+            }
+
+            neptuneLog.inertSearchLog(requestURI, type, value, addresses, result);
+
+        } catch (Exception e) {
+
+        }
     }
 
     private String geUid(String uname) throws IOException {
@@ -82,12 +114,16 @@ public class neptuneController {
         String integer = null;
         List<Element> et = d1.select("a.face-img");
 
-        Element element = et.get(0);
-        String href = element.attr("href");
+        if (et.size() > 0) {
 
-        if (href != null) {
-            Matcher matcher = pattern.matcher(href);
-            integer = matcher.replaceAll("").trim();
+            Element element = et.get(0);
+            String href = element.attr("href");
+
+            if (href != null) {
+                Matcher matcher = pattern.matcher(href);
+                integer = matcher.replaceAll("").trim();
+            }
+
         }
 
         return integer;
@@ -95,7 +131,7 @@ public class neptuneController {
 
     //    @RequestMapping("/testNeptune")
 //    @Scheduled(cron = "0 */60 * * * ?")
-    @Scheduled(initialDelay=1000, fixedRate=3600000)
+    @Scheduled(initialDelay = 1000, fixedRate = 3600000)
     public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
@@ -148,7 +184,7 @@ public class neptuneController {
 
             long mind = System.currentTimeMillis();
 
-            System.out.println((mind - start) / 1000);
+//            System.out.println((mind - start) / 1000);
 
             for (Map<String, Object> map : maps) {
                 roomid = map.get("roomid");
@@ -171,21 +207,41 @@ public class neptuneController {
                     getRoomAdmin(roomid, uid);
 
                     //粉丝榜
-//                    JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
-//                    JSONObject dataMedalRank = (JSONObject) medalRank.get("data");
-//                    List<Map<String,Object>> list = (List) dataMedalRank.get("list");
-//                    if (list.size() > 0) {
-//
-//                        for (Map<String, Object> stringObjectMap : list) {
-//
-//                            stringObjectMap.put("roomid", roomid);
-//
-//                        }
-//
-//                        neptuneService.selectByMedalRank(list);
-//
-//                        neptuneService.insertMedalRank(list);
-//                    }
+                    JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
+                    JSONObject dataMedalRank = (JSONObject) medalRank.get("data");
+                    List<Map<String, Object>> list = (List) dataMedalRank.get("list");
+
+                    if (list.size() > 0) {
+
+                        for (Map<String, Object> stringObjectMap : list) {
+
+                            stringObjectMap.put("roomid", roomid);
+                            stringObjectMap.put("ruid", uid);
+
+                        }
+
+                        List<Map<String, Object>> mapList = neptuneService.selectByMedalRank(roomid);
+                        if (mapList.size() > 0) {
+
+                            List<Map<String, Object>> mapList1 = compareListDataNotInInsert(list, mapList);
+                            if (mapList1.size() > 0) {
+
+                                neptuneService.insertMedalRank(mapList1);
+                            }
+
+                            List<Integer> integers = compareListDataNotInDelete(list, mapList);
+                            if (integers.size() > 0) {
+
+                                neptuneService.deleteMedalRank(integers);
+                            }
+
+
+                        } else {
+
+                            neptuneService.insertMedalRank(list);
+                        }
+
+                    }
 
                 }
             }

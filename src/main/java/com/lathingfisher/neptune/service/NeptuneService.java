@@ -32,4 +32,10 @@ public interface NeptuneService {
     List<Map<String, Object>> selectSearch(String uid) throws IOException;
 
     void insertAnchorUser(Object anchorRoomid, Object anchorUname, Object anchorUid);
+
+    List<Map<String, Object>> selectByMedalRank(Object list);
+
+    void insertMedalRank(List<Map<String, Object>> mapList1);
+
+    void deleteMedalRank(List<Integer> integers);
 }

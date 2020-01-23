@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lathingfisher.neptune.dao.NeptuneLogMapper">
+
+
+    <insert id="inertSearchLog">
+        INSERT INTO SearchLog(SEARCHTYPE , SEARCHVALUE , ADDRESS , IP , SEARCHDATE ,RESULT) VALUES
+            (#{type},#{value},#{address} , #{ip} , #{date} ,#{result})
+    </insert>
+
+</mapper>

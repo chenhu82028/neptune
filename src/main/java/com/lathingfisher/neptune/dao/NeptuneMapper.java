@@ -35,4 +35,10 @@ public interface NeptuneMapper {
     List<Map<String, Object>> selectSearch(@Param("uid") String uid);
 
     void insertAnchorUser(@Param("roomid")String anchorRoomid,@Param("uname") String anchorUname,@Param("uid") String anchorUid);
+
+    List<Map<String, Object>> selectByMedalRank(@Param("roomid") Object list);
+
+    void insertMedalRank(@Param("list") List<Map<String, Object>> mapList1);
+
+    void deleteMedalRank(@Param("list") List<Integer> integers);
 }
