@@ -11,6 +11,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,7 +99,7 @@ public class neptuneController {
             String requestURI = request.getRemoteAddr();
             String addresses = null;
 
-            if (requestURI != null) {
+            if (requestURI != null && !"".equals(requestURI)) {
                 addresses = AddressUtils.getAddresses("ip=" + requestURI, "utf-8");
             }
 
@@ -136,7 +137,7 @@ public class neptuneController {
 
     //    @RequestMapping("/testNeptune")
 //    @Scheduled(cron = "0 */60 * * * ?")
-//    @Scheduled(initialDelay = 1000, fixedRate = 3600000)
+    @Scheduled(initialDelay = 1000, fixedRate = 3600000)
     public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
@@ -224,6 +225,11 @@ public class neptuneController {
         System.out.println("全部用时:" + (System.currentTimeMillis() - start) / 1000);
     }
 
+    @RequestMapping("/testN")
+    public void test() {
+
+    }
+
     private void getMedalRank(Object roomid, Object uid) throws IOException {
         JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
         JSONObject dataMedalRank = (JSONObject) medalRank.get("data");
@@ -272,7 +278,12 @@ public class neptuneController {
 
                 Object anchorUname = anchordata.get("uname");
                 Object anchorUid = anchordata.get("uid");
-
+                if (anchorUid != null) {
+                    String string = String.valueOf(anchorUid);
+                    if ("".equals(string)) {
+                        anchorUid = uid;
+                    }
+                }
                 neptuneService.insertAnchorUser(anchorRoomid, anchorUname, anchorUid);
             }
         }
@@ -498,5 +509,7 @@ public class neptuneController {
 
         return lists;
     }
+
+
 
 }
