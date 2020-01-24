@@ -106,4 +106,14 @@ public class NeptuneServiceImpl implements NeptuneService {
     public void deleteMedalRank(List<Integer> integers) {
         neptuneMapper.deleteMedalRank(integers);
     }
+
+    @Override
+    public List<Map<String, Object>> searchAllModelRank() {
+        return neptuneMapper.searchAllModelRank();
+    }
+
+    @Override
+    public List<Map<String, Object>> searchModelRank(String value) {
+        return neptuneMapper.searchModelRank(value);
+    }
 }

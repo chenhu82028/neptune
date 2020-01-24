@@ -41,4 +41,8 @@ public interface NeptuneMapper {
     void insertMedalRank(@Param("list") List<Map<String, Object>> mapList1);
 
     void deleteMedalRank(@Param("list") List<Integer> integers);
+
+    List<Map<String, Object>> searchAllModelRank();
+
+    List<Map<String, Object>> searchModelRank(@Param("value") String value);
 }

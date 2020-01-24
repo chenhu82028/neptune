@@ -38,4 +38,8 @@ public interface NeptuneService {
     void insertMedalRank(List<Map<String, Object>> mapList1);
 
     void deleteMedalRank(List<Integer> integers);
+
+    List<Map<String, Object>> searchAllModelRank();
+
+    List<Map<String, Object>> searchModelRank(String value);
 }

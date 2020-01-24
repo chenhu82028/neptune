@@ -11,7 +11,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,8 +72,14 @@ public class neptuneController {
                 resultData.put("result", "success");
                 saveLog(type, value, request, "success");
             } else if ("2".equals(type)) {
-                resultData.put("result", "error");
-                saveLog(type, value, request, "error");
+                if ("".equals(value)) {
+                    mapList = neptuneService.searchAllModelRank();
+                } else {
+                    mapList = neptuneService.searchModelRank(value);
+                }
+                resultData.put("result", "success");
+                resultData.put("data", mapList);
+                saveLog(type, value, request, "success");
             } else if ("3".equals(type)) {
                 resultData.put("result", "error");
                 saveLog(type, value, request, "error");
@@ -131,7 +136,7 @@ public class neptuneController {
 
     //    @RequestMapping("/testNeptune")
 //    @Scheduled(cron = "0 */60 * * * ?")
-    @Scheduled(initialDelay = 1000, fixedRate = 3600000)
+//    @Scheduled(initialDelay = 1000, fixedRate = 3600000)
     public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
@@ -207,41 +212,7 @@ public class neptuneController {
                     getRoomAdmin(roomid, uid);
 
                     //粉丝榜
-                    JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
-                    JSONObject dataMedalRank = (JSONObject) medalRank.get("data");
-                    List<Map<String, Object>> list = (List) dataMedalRank.get("list");
-
-                    if (list.size() > 0) {
-
-                        for (Map<String, Object> stringObjectMap : list) {
-
-                            stringObjectMap.put("roomid", roomid);
-                            stringObjectMap.put("ruid", uid);
-
-                        }
-
-                        List<Map<String, Object>> mapList = neptuneService.selectByMedalRank(roomid);
-                        if (mapList.size() > 0) {
-
-                            List<Map<String, Object>> mapList1 = compareListDataNotInInsert(list, mapList);
-                            if (mapList1.size() > 0) {
-
-                                neptuneService.insertMedalRank(mapList1);
-                            }
-
-                            List<Integer> integers = compareListDataNotInDelete(list, mapList);
-                            if (integers.size() > 0) {
-
-                                neptuneService.deleteMedalRank(integers);
-                            }
-
-
-                        } else {
-
-                            neptuneService.insertMedalRank(list);
-                        }
-
-                    }
+                    getMedalRank(roomid, uid);
 
                 }
             }
@@ -251,6 +222,44 @@ public class neptuneController {
         }
 
         System.out.println("全部用时:" + (System.currentTimeMillis() - start) / 1000);
+    }
+
+    private void getMedalRank(Object roomid, Object uid) throws IOException {
+        JSONObject medalRank = HttpUtil.getResult("https://api.live.bilibili.com/rankdb/v1/RoomRank/webMedalRank?roomid=" + roomid + "&ruid=" + uid);
+        JSONObject dataMedalRank = (JSONObject) medalRank.get("data");
+        List<Map<String, Object>> list = (List) dataMedalRank.get("list");
+
+        if (list.size() > 0) {
+
+            for (Map<String, Object> stringObjectMap : list) {
+
+                stringObjectMap.put("roomid", roomid);
+                stringObjectMap.put("ruid", uid);
+
+            }
+
+            List<Map<String, Object>> mapList = neptuneService.selectByMedalRank(roomid);
+            if (mapList.size() > 0) {
+
+                List<Map<String, Object>> mapList1 = compareListDataNotInInsert(list, mapList);
+                if (mapList1.size() > 0) {
+
+                    neptuneService.insertMedalRank(mapList1);
+                }
+
+                List<Integer> integers = compareListDataNotInDelete(list, mapList);
+                if (integers.size() > 0) {
+
+                    neptuneService.deleteMedalRank(integers);
+                }
+
+
+            } else {
+
+                neptuneService.insertMedalRank(list);
+            }
+
+        }
     }
 
     private void getAnchor(Object roomid, Object uid) throws IOException {
