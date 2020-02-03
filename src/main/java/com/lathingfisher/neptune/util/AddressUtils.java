@@ -2,7 +2,6 @@ package com.lathingfisher.neptune.util;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -90,7 +89,7 @@ public class AddressUtils {
 			}
 			reader.close();
 			return buffer.toString();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (connection != null) {

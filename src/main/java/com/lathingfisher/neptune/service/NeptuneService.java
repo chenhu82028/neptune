@@ -19,13 +19,13 @@ public interface NeptuneService {
 
     List<Map<String, Object>> selectByGuardTabRuid(Object uid);
 
-    void deleteGuardTab(List<Integer> lists);
+    void deleteGuardTab(List<Long> lists);
 
     void insertUnionFans(Map<String, Object> stringObjectMap);
 
     List<Map<String, Object>> selectByRoomAdmin(Object roomid);
 
-    void deleteRoomAdmin(List<Integer> integers);
+    void deleteRoomAdmin(List<Long> integers);
 
     void insertRoomAdmin(List<Map<String, Object>> mapList1);
 
@@ -37,9 +37,13 @@ public interface NeptuneService {
 
     void insertMedalRank(List<Map<String, Object>> mapList1);
 
-    void deleteMedalRank(List<Integer> integers);
+    void deleteMedalRank(List<Long> integers);
 
     List<Map<String, Object>> searchAllModelRank();
 
     List<Map<String, Object>> searchModelRank(String value);
+
+    List<Integer> tempSelect();
+
+    void updateGuardTab(Map<String, Object> lists);
 }

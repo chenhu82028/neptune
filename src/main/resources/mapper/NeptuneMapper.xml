@@ -80,8 +80,8 @@
     </select>
 
     <insert id="insertAnchorUser">
-        REPLACE INTO AnchorUser(UID , USERNAME,ROOMID) VALUES
-        (#{uid}, #{uname},#{roomid} )
+        REPLACE INTO AnchorUser(UID,USERNAME,ROOMID) VALUES
+        (#{uid},#{uname},#{roomid})
     </insert>
 
     <select id="selectByMedalRank" resultType="java.util.Map">
@@ -111,7 +111,15 @@
 
     <select id="searchModelRank" resultType="java.util.Map">
         select a.MEDAL_NAME,a.ROOMID,b.USERNAME from MedalRank a left join AnchorUser b
-on a.ruid = b.uid where a.MEDAL_NAME = #{value}
-GROUP BY MEDAL_NAME,ROOMID
+        on a.ruid = b.uid where a.MEDAL_NAME like '%${value}%'
+        GROUP BY MEDAL_NAME,ROOMID
     </select>
+
+    <select id="tempSelect" resultType="int">
+        select RUID from GuardTab GROUP BY RUID
+    </select>
+
+    <update id="updateGuardTab">
+            update GuardTab set GUARD_LEVEL = #{list.guard_level} ,FACE = '${list.face}', USERNAME = '${list.username}' where ID = #{list.id}
+    </update>
 </mapper>

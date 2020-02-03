@@ -22,13 +22,13 @@ public interface NeptuneMapper {
 
     List<Map<String, Object>> selectByGuardTabRuid(@Param("ruid") Object uid);
 
-    void deleteGuardTab(@Param("list") List<Integer> list);
+    void deleteGuardTab(@Param("list") List<Long> list);
 
     void insertUnionFans(@Param("fans") Map<String, Object> stringObjectMap);
 
     List<Map<String, Object>> selectByRoomAdmin(@Param("ruid")Object roomid);
 
-    void deleteRoomAdmin(@Param("list")List<Integer> integers);
+    void deleteRoomAdmin(@Param("list")List<Long> integers);
 
     void insertRoomAdmin(@Param("list") List<Map<String, Object>> mapList1);
 
@@ -40,9 +40,13 @@ public interface NeptuneMapper {
 
     void insertMedalRank(@Param("list") List<Map<String, Object>> mapList1);
 
-    void deleteMedalRank(@Param("list") List<Integer> integers);
+    void deleteMedalRank(@Param("list") List<Long> integers);
 
     List<Map<String, Object>> searchAllModelRank();
 
     List<Map<String, Object>> searchModelRank(@Param("value") String value);
+
+    List<Integer> tempSelect();
+
+    void updateGuardTab(@Param("list") Map<String, Object> lists);
 }

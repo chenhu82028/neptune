@@ -52,7 +52,7 @@ public class NeptuneServiceImpl implements NeptuneService {
     }
 
     @Override
-    public void deleteGuardTab(List<Integer> lists) {
+    public void deleteGuardTab(List<Long> lists) {
         neptuneMapper.deleteGuardTab(lists);
     }
 
@@ -62,7 +62,7 @@ public class NeptuneServiceImpl implements NeptuneService {
     }
 
     @Override
-    public void deleteRoomAdmin(List<Integer> integers) {
+    public void deleteRoomAdmin(List<Long> integers) {
         neptuneMapper.deleteRoomAdmin(integers);
     }
 
@@ -103,7 +103,7 @@ public class NeptuneServiceImpl implements NeptuneService {
     }
 
     @Override
-    public void deleteMedalRank(List<Integer> integers) {
+    public void deleteMedalRank(List<Long> integers) {
         neptuneMapper.deleteMedalRank(integers);
     }
 
@@ -115,5 +115,15 @@ public class NeptuneServiceImpl implements NeptuneService {
     @Override
     public List<Map<String, Object>> searchModelRank(String value) {
         return neptuneMapper.searchModelRank(value);
+    }
+
+    @Override
+    public List<Integer> tempSelect() {
+        return neptuneMapper.tempSelect();
+    }
+
+    @Override
+    public void updateGuardTab(Map<String, Object> lists) {
+        neptuneMapper.updateGuardTab(lists);
     }
 }

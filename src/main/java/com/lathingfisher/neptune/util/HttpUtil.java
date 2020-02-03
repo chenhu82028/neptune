@@ -19,11 +19,11 @@ public class HttpUtil {
 
     public static JSONObject getResult(String urls) throws IOException {
 
-//        try {
-//            Thread.sleep(50);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         URL url = new URL(urls);
         //打开和url之间的连接
