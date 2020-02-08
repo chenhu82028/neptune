@@ -20,7 +20,7 @@ public class HttpUtil {
     public static JSONObject getResult(String urls) throws IOException {
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(350);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

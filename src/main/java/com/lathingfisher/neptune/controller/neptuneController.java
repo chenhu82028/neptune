@@ -202,7 +202,7 @@ public class neptuneController {
 
             List<Integer> integers = neptuneService.tempSelect();
 
-            for (int i = 1273914; i <= 15200000; i++) {
+            for (int i = 1302499; i <= 15200000; i++) {
 
                 JSONObject result = HttpUtil.getResult("https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=" + i);// 获取连接
 
