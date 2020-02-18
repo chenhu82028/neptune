@@ -46,4 +46,6 @@ public interface NeptuneService {
     List<Integer> tempSelect();
 
     void updateGuardTab(Map<String, Object> lists);
+
+    List<Map<String, Object>> selectRoomAdmin(String uid);
 }

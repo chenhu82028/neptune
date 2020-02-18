@@ -126,4 +126,9 @@ public class NeptuneServiceImpl implements NeptuneService {
     public void updateGuardTab(Map<String, Object> lists) {
         neptuneMapper.updateGuardTab(lists);
     }
+
+    @Override
+    public List<Map<String, Object>> selectRoomAdmin(String uid) {
+        return neptuneMapper.selectRoomAdmin(uid);
+    }
 }

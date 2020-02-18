@@ -71,9 +71,8 @@
         WHEN 3 THEN '舰长'
         ELSE '未知'
         END
-        ) as GUARD_LEVEL,a.FACE,a.USERNAME,b.CTIME,c.UNION_NAME,c.DAYS,d.USERNAME as AnchorName from
+        ) as GUARD_LEVEL,a.FACE,a.USERNAME,c.UNION_NAME,c.DAYS,d.USERNAME as AnchorName from
         GuardTab a
-        left join RoomAdmin b on a.ruid = b.ruid and a.uid = b.uid
         left join UnionFans c on a.ruid = c.ruid and a.uid = c.uid
         left join AnchorUser d on a.ruid = d.uid
         where a.uid = #{uid} ORDER BY GUARD_LEVEL
@@ -122,4 +121,11 @@
     <update id="updateGuardTab">
             update GuardTab set GUARD_LEVEL = #{list.guard_level} ,FACE = '${list.face}', USERNAME = '${list.username}' where ID = #{list.id}
     </update>
+
+    <select id="selectRoomAdmin" resultType="java.util.Map">
+        select a.UNAME,a.CTIME,a.ROOMID,d.USERNAME from RoomAdmin a
+        left join GuardTab b on a.uid = b.uid and a.RUID = b.RUID
+        left join AnchorUser d on a.ruid = d.uid
+        where a.uid = #{uid} ORDER BY CTIME
+    </select>
 </mapper>

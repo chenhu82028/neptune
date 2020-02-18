@@ -19,7 +19,7 @@ public class NeptuneLogImpl implements NeptuneLog {
     @Autowired
     public NeptuneLogMapper neptuneLogMapper;
 
-    private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void inertSearchLog(String requestURI, String type, String value, String addresses,String result) {

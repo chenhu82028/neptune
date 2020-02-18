@@ -49,4 +49,7 @@ public interface NeptuneMapper {
     List<Integer> tempSelect();
 
     void updateGuardTab(@Param("list") Map<String, Object> lists);
+
+    List<Map<String, Object>> selectRoomAdmin(@Param("uid") String uid);
+
 }
