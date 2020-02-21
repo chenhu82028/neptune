@@ -3,8 +3,9 @@ package com.lathingfisher.neptune.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.lathingfisher.neptune.service.NeptuneLog;
 import com.lathingfisher.neptune.service.NeptuneService;
-import com.lathingfisher.neptune.util.AddressUtils;
 import com.lathingfisher.neptune.util.HttpUtil;
+import com.lathingfisher.neptune.util.IPLocation;
+import com.lathingfisher.neptune.util.Location;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -77,7 +78,8 @@ public class neptuneController {
                 }
 
                 if (uid == null) {
-                    resultData.put("result", "error");
+                    resultData.put("result", "errormsg");
+                    resultData.put("data", "没找到这个用户呢，建议用UID查询,如（UID:123456）");
                     saveLog(type, value, request, "error");
                     return resultData;
                 }
@@ -91,8 +93,15 @@ public class neptuneController {
 
                 mapList = neptuneService.selectSearch(uid);
 
-                resultData.put("data", mapList);
-                resultData.put("result", "success");
+                if (mapList.size() == 0) {
+
+                    resultData.put("result", "errormsg");
+                    resultData.put("data", "没查到这个人的船呢");
+                } else {
+                    resultData.put("data", mapList);
+                    resultData.put("result", "success");
+                }
+
                 resultData.put("type", 1);
                 saveLog(type, value, request, "success");
             } else if ("2".equals(type)) {
@@ -153,7 +162,7 @@ public class neptuneController {
 
     //    @RequestMapping("/testNeptune")
 //    @Scheduled(cron = "0 */60 * * * ?")
-    @Scheduled(initialDelay = 1000, fixedRate = 4200000)
+    @Scheduled(initialDelay = 1000, fixedRate = 4000000)
     public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
@@ -236,7 +245,7 @@ public class neptuneController {
         System.out.println("全部用时:" + (System.currentTimeMillis() - start) / 1000);
     }
 
-//        @Scheduled(initialDelay = 1000, fixedRate = 3600000)
+    //        @Scheduled(initialDelay = 1000, fixedRate = 3600000)
     public void aaa() throws IOException {
 //        https://search.bilibili.com/all?keyword=UID%3A225740
         //https://live.bilibili.com/15200000
@@ -294,10 +303,14 @@ public class neptuneController {
     private void saveLog(String type, String value, HttpServletRequest request, String result) {
         try {
             String requestURI = request.getRemoteAddr();
-            String addresses = null;
+            String addresses = "";
 
             if (requestURI != null && !"".equals(requestURI)) {
-                addresses = AddressUtils.getAddresses("ip=" + requestURI, "utf-8");
+                IPLocation ipLocation = new IPLocation("/www/wwwroot/default/qqwry.dat");
+                Location location = ipLocation.fetchIPLocation(requestURI);
+                if (location != null) {
+                    addresses = location.toString();
+                }
             }
 
             neptuneLog.inertSearchLog(requestURI, type, value, addresses, result);

@@ -123,9 +123,9 @@
     </update>
 
     <select id="selectRoomAdmin" resultType="java.util.Map">
-        select a.UNAME,a.CTIME,a.ROOMID,d.USERNAME from RoomAdmin a
-        left join GuardTab b on a.uid = b.uid and a.RUID = b.RUID
+        select b.USERNAME as UNAME,b.FACE,a.CTIME,a.ROOMID,d.USERNAME from RoomAdmin a
+        left join GuardTab b on a.uid = b.uid
         left join AnchorUser d on a.ruid = d.uid
-        where a.uid = #{uid} ORDER BY CTIME
+        where a.uid = #{uid} GROUP BY d.USERNAME ORDER BY CTIME
     </select>
 </mapper>
