@@ -52,4 +52,5 @@ public interface NeptuneMapper {
 
     List<Map<String, Object>> selectRoomAdmin(@Param("uid") String uid);
 
+    List<Map> selectTenTopic();
 }

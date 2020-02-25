@@ -1,6 +1,7 @@
 package com.lathingfisher.neptune.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lathingfisher.neptune.dao.NeptuneMapper;
 import com.lathingfisher.neptune.service.NeptuneLog;
 import com.lathingfisher.neptune.service.NeptuneService;
 import com.lathingfisher.neptune.util.HttpUtil;
@@ -12,7 +13,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +40,9 @@ public class neptuneController {
 
     @Autowired
     public NeptuneLog neptuneLog;
+
+    @Autowired
+    public NeptuneMapper neptuneMapper;
 
     public static SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static Pattern pattern = Pattern.compile("[^0-9]");
@@ -162,7 +165,7 @@ public class neptuneController {
 
     //    @RequestMapping("/testNeptune")
 //    @Scheduled(cron = "0 */60 * * * ?")
-    @Scheduled(initialDelay = 1000, fixedRate = 4000000)
+//    @Scheduled(initialDelay = 1000, fixedRate = 4000000)
     public void timedTask() {
 
         List<Map<String, Object>> maps = new ArrayList<>();
@@ -688,4 +691,11 @@ public class neptuneController {
         return lists;
     }
 
+    @RequestMapping("/brush")
+    @ResponseBody
+    public List<Map> resultBrush() {
+        List<Map> topics = neptuneMapper.selectTenTopic();
+        System.out.println(111);
+        return topics;
+    }
 }

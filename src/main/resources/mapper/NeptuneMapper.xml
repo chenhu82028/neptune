@@ -128,4 +128,8 @@
         left join AnchorUser d on a.ruid = d.uid
         where a.uid = #{uid} GROUP BY d.USERNAME ORDER BY CTIME
     </select>
+
+    <select id="selectTenTopic" resultType="java.util.Map">
+        SELECT * FROM `brush` LIMIT 10
+    </select>
 </mapper>
